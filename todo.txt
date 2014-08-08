@@ -1,0 +1,195 @@
+ - BUSYLOOP funkar inte
+
+ - Är nya uppdelningen verkligen bättre? (row-wise i stället för #block)
+ - script för att hitta statistik ur loggar
+
+
+
+
+
+
+
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.05-var>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.05-var 10240 5 5000
+chunk_size= 10240 num_chunks= 64 dt= 5 end= 5000 data= data/galew-655362-31-ep40-o4-gc-0.05-var cpus= 4
+Abort 2870.000000 / 5000.000000
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 616585356189 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.05-var>cd ..
+mwork ~/proj/rbf-sw/resdata>cd galew-655362-31-ep40-o4-gc-0.05-org/
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.05-org>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.05-org 10240 5 5000
+chunk_size= 10240 num_chunks= 64 dt= 5 end= 5000 data= data/galew-655362-31-ep40-o4-gc-0.05-org cpus= 4
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 1074599908878 dbg=[ -1848.44 849.812 25548.6 6.42827e+10 -5428.11 -1.78287e-08 -1.15211e-06 99613.9 7159.45 1.03162e+06 25548.6 6.42827e+10 ]
+
+
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.05-var2>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.05-var2 10240 5 5000
+chunk_size= 10240 num_chunks= 64 dt= 5 end= 5000 data= data/galew-655362-31-ep40-o4-gc-0.05-var2 cpus= 4
+Abort 2870.000000 / 5000.000000
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 617532165664 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+
+
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.05-ga>ln -s ../../data/
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.05x>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.05-ga 10240 5 5000
+chunk_size= 10240 num_chunks= 64 dt= 5 end= 5000 data= data/galew-655362-31-ep40-o4-gc-0.05-ga cpus= 4
+Abort 350.000000 / 5000.000000
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 75252697141 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.05-ga>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.05-ga 10240 1 1000
+chunk_size= 10240 num_chunks= 64 dt= 1 end= 1000 data= data/galew-655362-31-ep40-o4-gc-0.05-ga cpus= 4
+Abort 71.000000 / 1000.000000
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 76358990533 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+
+
+>> clock , mt_save(struct('test', 'galew', 'n', 655362, 'fd', 31, 'ep', 40, 'order', 4, 'gamma_c', -0.1)); clock
+ans =
+         2014            8            7            5           31       29.541
+galew-655362-31-ep40-o4-gc-0.1
+mt_rbfmatrix_fd_hyper
+save D
+gradghm
+save atm
+ans =
+         2014            8            7            8           48       47.953
+
+
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.1-ga>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.1-ga 10240 1 1000
+chunk_size= 10240 num_chunks= 64 dt= 1 end= 1000 data= data/galew-655362-31-ep40-o4-gc-0.1-ga cpus= 4
+Abort 71.000000 / 1000.000000
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 78066545889 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.1-org>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.1-org 10240 1 1000
+chunk_size= 10240 num_chunks= 64 dt= 1 end= 1000 data= data/galew-655362-31-ep40-o4-gc-0.1-org cpus= 4
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 1076051268812 dbg=[ -344.987 183.994 5446.07 6.42843e+10 -1750.95 -6.28632e-08 -3.45378e-06 99613.9 9689.16 1.03181e+06 5446.07 6.42843e+10 ]
+
+
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.1-ga>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.1-ga 10240 5 5000
+chunk_size= 10240 num_chunks= 64 dt= 5 end= 5000 data= data/galew-655362-31-ep40-o4-gc-0.1-ga cpus= 4
+Abort 285.000000 / 5000.000000
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 61255192236 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+
+---
+
+GA:
+./run galew-6400-31-ep2.7-o4-gc-0.05 400 600 518400
+chunk_size= 400 num_chunks= 16 dt= 600 end= 518400 data= data/galew-6400-31-ep2.7-o4-gc-0.05 cpus= 4
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 4104413520 dbg=[ 50.6198 -53.1026 -282.856 6.27394e+08 -2025.41 -537.608 -352.955 89072.9 2128.43 5209.84 242.536 6.27394e+08 ]
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 5399834449 dbg=[ -27.9535 -87.1889 -302.851 6.27435e+08 -1609.46 -856.794 -399.075 88968.8 2139.55 5001.25 310.509 6.27435e+08 ] <-- EXPECTED
+ln: failed to create symbolic link ‘./data’: File exists
+chunk_size= 400 num_chunks= 16 dt= 600 end= 1.296e+06 data= data/tc5-6400-31-ep2.7-o4-gc-0.05 cpus= 4
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 10358577517 dbg=[ 200.373 136.193 -125.154 -1.74851e+07 -1519.19 7.14835 -295.696 -1.74851e+07 876.053 2909.48 173.899 -7889.38 ]
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 8641111484 dbg=[ 203.336 134.071 -124.541 -1.75073e+07 -1508.3 7.12457 -296.373 -1.75073e+07 869.626 2906.25 173.942 -7895.51 ] <-- EXPECTED
+
+VAR:
+./run galew-6400-31-ep2.7-o4-gc-0.05 400 600 518400
+chunk_size= 400 num_chunks= 16 dt= 600 end= 518400 data= data/galew-6400-31-ep2.7-o4-gc-0.05 cpus= 4
+Abort 33000.000000 / 518400.000000
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 217704653 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 5399834449 dbg=[ -27.9535 -87.1889 -302.851 6.27435e+08 -1609.46 -856.794 -399.075 88968.8 2139.55 5001.25 310.509 6.27435e+08 ] <-- EXPECTED
+ln: failed to create symbolic link ‘./data’: File exists
+chunk_size= 400 num_chunks= 16 dt= 600 end= 1.296e+06 data= data/tc5-6400-31-ep2.7-o4-gc-0.05 cpus= 4
+Abort 55800.000000 / 1296000.000000
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 360284108 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 8641111484 dbg=[ 203.336 134.071 -124.541 -1.75073e+07 -1508.3 7.12457 -296.373 -1.75073e+07 869.626 2906.25 173.942 -7895.51 ] <-- EXPECTED
+
+ORG:
+./run galew-6400-31-ep2.7-o4-gc-0.05 400 600 518400
+chunk_size= 400 num_chunks= 16 dt= 600 end= 518400 data= data/galew-6400-31-ep2.7-o4-gc-0.05 cpus= 4
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 4111027421 dbg=[ -27.9531 -87.189 -302.851 6.27435e+08 -1609.46 -856.794 -399.076 88968.8 2139.56 5001.25 310.507 6.27435e+08 ]
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 5399834449 dbg=[ -27.9535 -87.1889 -302.851 6.27435e+08 -1609.46 -856.794 -399.075 88968.8 2139.55 5001.25 310.509 6.27435e+08 ] <-- EXPECTED
+ln: failed to create symbolic link ‘./data’: File exists
+chunk_size= 400 num_chunks= 16 dt= 600 end= 1.296e+06 data= data/tc5-6400-31-ep2.7-o4-gc-0.05 cpus= 4
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 10273167586 dbg=[ 203.368 133.938 -124.622 -1.75073e+07 -1508.32 7.1272 -296.373 -1.75073e+07 869.621 2906.06 174.054 -7894.7 ]
+size = 16 chunk_size= 400 num_chunks= 16 cpus= 4 time= 8641111484 dbg=[ 203.336 134.071 -124.541 -1.75073e+07 -1508.3 7.12457 -296.373 -1.75073e+07 869.626 2906.25 173.942 -7895.51 ] <-- EXPECTED
+
+QR:
+mwork ~/proj/rbf-sw/resdata/galew-655362-31-ep40-o4-gc-0.05-qr2>../../bin/sw data/galew-655362-31-ep40-o4-gc-0.05-qr 10240 5 518400
+chunk_size= 10240 num_chunks= 64 dt= 5 end= 518400 data= data/galew-655362-31-ep40-o4-gc-0.05-qr cpus= 4
+Abort 244530.000000 / 518400.000000
+size = 64 chunk_size= 10240 num_chunks= 64 cpus= 4 time= 53954144186148 dbg=[ -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan ]
+
+
+
+
+ * Slå ihop L och D
+ * representera glesa matriser smartare?
+ -- dvs slå ihop colidx med values?
+    [antal] [idx] [value] [idx] [value]
+
+
+*** Plotta Galewsky som det ska plottas
+
+
+
+
+
+ * argue that dynamic scheduling is not only easier, 
+   but also performs better. run-time cost for dynamic load balancing easily eaten by improved balance.
+   even when seemingly perfect from start. can we get numbers to support this? that is, can we easily
+   do a perfect schedule to compare against?
+
+ * plot time to calculate one time step for different block sizes.
+   -- select that block size.
+
+ * calculate what indices overlap. compare with what is actually sent.
+   optimize what is sent.
+
+ * Presentation: How we rephrased the problem from Dx* Dy* ... to
+   D*[]
+
+ * Change to/add new problem
+
+ * Write on paper!
+
+   -- hwloc support (need to identify hyperthreads to make good default choices)
+
+ISSUES:
+ - Copies H to K, then sends K to other node.
+   We actually would like to send H, and have it arrive as K..?
+ - Send less data? (Send only precalculated part of block?)
+ - stealing between nodes possible? 
+   seems possible as long as its enough that only the two involed nodes know about it.
+
+-----
+
+ * Try on Bull
+
+ * Permute matrices!
+   r = symrcm(abs(DPx)+abs(DPy)+abs(DPz)+abs(L));
+   R = DPx(r,r);
+
+
+MPI PERFORMACE
+==============
+
+BENCH uppmätt: size 3656 (doubles): 69000-69500 cykler för send/recv
+size = 25600 chunk_size= 914   chunks: 3656 / 3688
+
+MPI_waitany: 80000 cycles
+
+Running: send/recv ~ 100 - 120 Mcycles.
+
+with thread affinity, send/recv took 120.000000 Mcycles.
+Without, only 0.070000 Mcyles are needed. Hyperthreading
+kills us here.
+
+Workaround:
+
+mpi/mpi_thread: set affinity of MPI thread to last two
+mpi/mpi_threadmanager: set affinity of worker thread to id*2
+mpi/mpi_nodemanager: set affinity of main thread to [0 1]
+superglue/platform/threads: set affinity on two adjacent ids.
+
+
+SYFTE MED PAPPRET:
+  - våra metoder och modeller leder till riktigt bra implementation av 
+    spännande och riktigt tillämpning
+  - lätt att koda och bra parallel prestanda och skalning
+  - poänger: hur undvika memory bound och få det bra i alla fall...
+
+
+--------------------------------------------
+
+* update the save script
+-- new file formats? (combined matrices)
+
+tried with prefetch -- could not get any improvement.
+
+
+
