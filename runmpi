@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ "$#" -ne 4 ]; then
+    echo "Usage: ./sw data/[mldatapath] [chunk_size] [time_step] [end_time]"
+else
+    mkdir -p resdata/$1-dt$3
+    ( cd resdata/$1-dt$3 ; ln -s ../../data ; mpirun -n 4 ../../bin/swmpi data/$1 $2 $3 $4 >& info.txt )
+    cat resdata/$1-dt$3/info.txt
+fi
