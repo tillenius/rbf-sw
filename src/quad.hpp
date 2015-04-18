@@ -8,6 +8,16 @@
 #include <x86intrin.h>
 #endif
 
+#if defined(_MSC_VER)
+#define RBFSW_INLINE __forceinline
+#define RBFSW_ALIGN32 __declspec(align(32))
+#define RBFSW_ALIGN16 __declspec(align(16))
+#else
+#define RBFSW_INLINE __attribute__((always_inline))
+#define RBFSW_ALIGN32 __attribute__ ((aligned (32)))
+#define RBFSW_ALIGN16 __attribute__ ((aligned (16)))
+#endif
+
 template <typename value_t>
 struct quad {
   value_t data[4];
@@ -18,33 +28,33 @@ struct quad {
 struct vec4 {
   __m256d mdata;
 
-  const double *elem(size_t i) const __attribute__((always_inline)) { return ((double *) &mdata)+i; }
-  double *elem(size_t i) __attribute__((always_inline))  { return ((double *) &mdata)+i; }
+  RBFSW_INLINE const double *elem(size_t i) const { return ((double *) &mdata)+i; }
+  RBFSW_INLINE double *elem(size_t i) { return ((double *) &mdata)+i; }
 
   vec4() {}
 
-  vec4(double d) __attribute__((always_inline)) {
+  RBFSW_INLINE vec4(double d) {
     mdata = _mm256_set1_pd(d);
   }
 
-  void load(double *buff) {
+  RBFSW_INLINE void load(double *buff) {
     mdata = _mm256_load_pd(buff);
   }
 
-  void add_scaled_vec(double s, const vec4 &rhs) __attribute__((always_inline)) {
+  RBFSW_INLINE void add_scaled_vec(double s, const vec4 &rhs) {
     mdata = _mm256_add_pd(mdata,
                           _mm256_mul_pd(_mm256_set1_pd(s),
                                         rhs.mdata ));
   }
-  void sum_and_store(const vec4 &tmp) __attribute__((always_inline)) {
+  RBFSW_INLINE void sum_and_store(const vec4 &tmp) {
     mdata = _mm256_add_pd(mdata, tmp.mdata);
   }
-  void store_sum_with_scaled_vec(const vec4 &h, double s, const vec4 &d) __attribute__((always_inline)) {
+  RBFSW_INLINE void store_sum_with_scaled_vec(const vec4 &h, double s, const vec4 &d) {
     mdata = _mm256_add_pd(h.mdata, 
                          _mm256_mul_pd(_mm256_set1_pd(s), d.mdata));
   }
-  void rk4_step(const vec4 &rhs, double s, const vec4 &d1, const vec4 &d2, const vec4 &d3, const vec4 &d4)
-  __attribute__((always_inline)) {
+  RBFSW_INLINE void rk4_step(const vec4 &rhs, double s, const vec4 &d1, const vec4 &d2, const vec4 &d3, const vec4 &d4)
+  {
 
     mdata = _mm256_add_pd( rhs.mdata,
                            _mm256_mul_pd(_mm256_set1_pd(s),
@@ -53,38 +63,38 @@ struct vec4 {
                                                                                      _mm256_add_pd(d2.mdata, d3.mdata)),
                                                                       d4.mdata))));
   }
-} __attribute__ ((aligned (32)));
+} RBFSW_ALIGN32;
 
 #elif defined(__SSE3__)
 struct vec4 {
   __m128d mdata[2];
 
-  const double *elem(size_t i) const __attribute__((always_inline)) { return ((double *) &mdata)+i; }
-  double *elem(size_t i) __attribute__((always_inline))  { return ((double *) &mdata)+i; }
+  RBFSW_INLINE const double *elem(size_t i) const { return ((double *) &mdata)+i; }
+  RBFSW_INLINE double *elem(size_t i) { return ((double *) &mdata)+i; }
 
   vec4() {}
 
-  vec4(double d) __attribute__((always_inline)) {
+  RBFSW_INLINE vec4(double d) {
     mdata[0] = _mm_set1_pd(d);
     mdata[1] = _mm_set1_pd(d);
   }
-  void load(double *buff) {
+  RBFSW_INLINE void load(double *buff) {
     mdata[0] = _mm_load_pd(&buff[0]);
     mdata[1] = _mm_load_pd(&buff[2]);
   }
-  void add_scaled_vec(double s, const vec4 &rhs) __attribute__((always_inline)) {
+  RBFSW_INLINE void add_scaled_vec(double s, const vec4 &rhs) {
     mdata[0] = _mm_add_pd(mdata[0], _mm_mul_pd(_mm_set1_pd(s), rhs.mdata[0] ));
     mdata[1] = _mm_add_pd(mdata[1], _mm_mul_pd(_mm_set1_pd(s), rhs.mdata[1] ));
   }
-  void sum_and_store(const vec4 &tmp) __attribute__((always_inline)) {
+  RBFSW_INLINE void sum_and_store(const vec4 &tmp) {
     mdata[0] = _mm_add_pd(tmp.mdata[0], mdata[0] );
     mdata[1] = _mm_add_pd(tmp.mdata[1], mdata[1] );
   }
-  void store_sum_with_scaled_vec(const vec4 &h, double s, const vec4 &d) __attribute__((always_inline)) {
+  RBFSW_INLINE void store_sum_with_scaled_vec(const vec4 &h, double s, const vec4 &d) {
     mdata[0] = _mm_add_pd( h.mdata[0], _mm_mul_pd(_mm_set1_pd(s), d.mdata[0] ));
     mdata[1] = _mm_add_pd( h.mdata[1], _mm_mul_pd(_mm_set1_pd(s), d.mdata[1] ));
   }
-  void rk4_step(const vec4 &rhs, double s, const vec4 &d1, const vec4 &d2, const vec4 &d3, const vec4 &d4) __attribute__((always_inline)) {
+  RBFSW_INLINE void rk4_step(const vec4 &rhs, double s, const vec4 &d1, const vec4 &d2, const vec4 &d3, const vec4 &d4) {
      mdata[0] = _mm_add_pd(rhs.mdata[0],
                            _mm_mul_pd(_mm_set1_pd(s),
                                       _mm_add_pd(d1.mdata[0],
@@ -98,49 +108,49 @@ struct vec4 {
                                                                        _mm_add_pd(d2.mdata[1], d3.mdata[1])),
                                                             d4.mdata[1]))));
   }
-} __attribute__ ((aligned (16)));
+} RBFSW_ALIGN16;
  
 #else
 
 struct vec4 {
   double mdata[4];
 
-  const double *elem(size_t i) const __attribute__((always_inline)) { return ((double *) &mdata)+i; }
-  double *elem(size_t i) __attribute__((always_inline))  { return ((double *) &mdata)+i; }
+  RBFSW_INLINE const double *elem(size_t i) const { return ((double *)&mdata) + i; }
+  RBFSW_INLINE double *elem(size_t i) { return ((double *)&mdata) + i; }
 
   vec4() {}
 
-  vec4(double d) __attribute__((always_inline)) {
+  RBFSW_INLINE vec4(double d) {
     mdata[0] = d;
     mdata[1] = d;
     mdata[2] = d;
     mdata[3] = d;
   }
-  void load(double *buff) {
+  RBFSW_INLINE void load(double *buff) {
     mdata[0] = buff[0];
     mdata[1] = buff[1];
     mdata[2] = buff[2];
     mdata[3] = buff[3];
   }
-  void add_scaled_vec(double s, const vec4 &rhs) __attribute__((always_inline)) {
+  RBFSW_INLINE void add_scaled_vec(double s, const vec4 &rhs) {
     mdata[0] += s * rhs.mdata[0];
     mdata[1] += s * rhs.mdata[1];
     mdata[2] += s * rhs.mdata[2];
     mdata[3] += s * rhs.mdata[3];
   }
-  void sum_and_store(const vec4 &tmp) {
+  RBFSW_INLINE void sum_and_store(const vec4 &tmp) {
     mdata[0] += tmp.mdata[0];
     mdata[1] += tmp.mdata[1];
     mdata[2] += tmp.mdata[2];
     mdata[3] += tmp.mdata[3];
   }
-  void store_sum_with_scaled_vec(const vec4 &h, double s, const vec4 &d) __attribute__((always_inline)) {
+  RBFSW_INLINE void store_sum_with_scaled_vec(const vec4 &h, double s, const vec4 &d) {
     mdata[0] = h.mdata[0] + s * d.mdata[0];
     mdata[1] = h.mdata[1] + s * d.mdata[1];
     mdata[2] = h.mdata[2] + s * d.mdata[2];
     mdata[3] = h.mdata[3] + s * d.mdata[3];
   }
-  void rk4_step(const vec4 &rhs, double s, const vec4 &d1, const vec4 &d2, const vec4 &d3, const vec4 &d4) __attribute__((always_inline)) {
+  RBFSW_INLINE void rk4_step(const vec4 &rhs, double s, const vec4 &d1, const vec4 &d2, const vec4 &d3, const vec4 &d4) {
     mdata[0] = rhs.mdata[0] + s*( d1.mdata[0] + 2.0*(d2.mdata[0] + d3.mdata[0]) + d4.mdata[0]);
     mdata[1] = rhs.mdata[1] + s*( d1.mdata[1] + 2.0*(d2.mdata[1] + d3.mdata[1]) + d4.mdata[1]);
     mdata[2] = rhs.mdata[2] + s*( d1.mdata[2] + 2.0*(d2.mdata[2] + d3.mdata[2]) + d4.mdata[2]);

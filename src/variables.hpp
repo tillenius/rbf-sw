@@ -113,12 +113,6 @@ private:
   };
 
   void find_distribution(size_t num_cores, size_t num_ranks) {
-
-#ifdef USE_MPI
-    // When using MPI, don't assign chunks to the core responsible for communication.
-    --num_cores;
-#endif
-
     rowrank.resize(num_chunks);
     rowcore.resize(num_chunks);
 

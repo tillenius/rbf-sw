@@ -17,7 +17,8 @@ typedef SuperGlue<Options> tasklib_t;
 
 #include <sstream>
 #include <iostream>
-#include <math.h>
+#include <iomanip>
+#include <cmath>
 
 #include <cstdlib>
 #include <cstdio>
@@ -59,21 +60,6 @@ std::string verify(BlockedVectorHandle<vec4> &H) {
   return ss.str();
 }
 
-//=============================================================================
-// FinalizeTask
-//=============================================================================
-class FinalizeTask : public sgmpi::MPITask<Options> {
-public:
-  FinalizeTask(BlockedVectorHandle<vec4> &H, sgmpi::MPIHandle<Options> &end_handle) {
-    H.register_access(*this, ReadWriteAdd::read);
-    fulfill(ReadWriteAdd::write, end_handle, 0);
-  }
-  void run(TaskExecutor<Options> &) {
-    //fprintf(stderr, "Finalize\n");
-  }
-  std::string get_name() { return "finalize"; }
-};
-
 struct TaskGenerator;
 
 struct SaveTask : public sgmpi::MPITask<Options> {
@@ -108,15 +94,19 @@ struct GenTaskCallback : public Task<Options> {
   std::string get_name() { return "GenTask"; }
 };
 
+#ifdef RBFSW_DEBUG
 const double save_interval = 60.0*60.0*3.0; // save every 3 hours
+#endif
 
 struct TaskGenerator {
   double t;
   double dt;
   double t_end;
+#ifdef RBFSW_DEBUG
   double next_save;
   SpinLock abort_spinlock;
   volatile bool aborted;
+#endif
   Handle<Options> handle; // to disallow several concurrent TaskGenerator
 
   RHS rhs;
@@ -124,25 +114,32 @@ struct TaskGenerator {
 
   BlockedVectorHandle<vec4> &H;
 
-  sgmpi::MPIHandle<Options> &end_handle;
   sgmpi::MPIHandle<Options> filehandle;
 
   TaskGenerator(variables &vars,
-                double dt_, double t_end_, BlockedVectorHandle<vec4> &H_,
-                sgmpi::MPIHandle<Options> &end_handle_)
-  : t(0.0), dt(dt_), t_end(t_end_), next_save(save_interval), aborted(false),
-    rhs(vars), rk4(rhs), H(H_), end_handle(end_handle_)
+                double dt_, double t_end_, BlockedVectorHandle<vec4> &H_)
+  : t(0.0), dt(dt_), t_end(t_end_), 
+#ifdef RBFSW_DEBUG
+    next_save(save_interval), 
+    aborted(false),
+#endif
+    rhs(vars), rk4(rhs), H(H_)
   {
   }
 
   void callback(BlockedVectorHandle<vec4> &H);
 
+#ifdef RBFSW_DEBUG
   void generate(bool abort_now) {
+#else
+  void generate() {
+#endif
     if (t >= t_end) {
       //fprintf(stderr, "Generate %f %f -- nope\n", t, t_end);
       return;
     }
 
+#ifdef RBFSW_DEBUG
     if (aborted)
       return;
 
@@ -152,7 +149,6 @@ struct TaskGenerator {
         return;
       aborted = true;
       printf("Abort %f / %f\n", t, t_end);
-      tl->submit(new FinalizeTask(H, end_handle));
       return;
     }
 
@@ -163,15 +159,10 @@ struct TaskGenerator {
       for (size_t i = 0; i < H.size(); ++i)
         tl->submit(new SaveTask(fname, H(i), filehandle, i == 0));
     }
+#endif
 
-    //fprintf(stderr, "Generate %f %f\n", t, t_end);
     rk4(t, dt, H, *this);
     t += dt;
-
-    if (t >= t_end)
-      tl->submit(new FinalizeTask(H, end_handle));
-
-    return;
   }
 };
 
@@ -187,7 +178,11 @@ GenTaskCallback::GenTaskCallback(TaskGenerator &tg_, BlockedVectorHandle<vec4> &
 }
 
 void GenTaskCallback::run(TaskExecutor<Options> &) {
+#ifdef RBFSW_DEBUG
   tg.generate( isnan(*(double *) block->get_data()) );
+#else
+  tg.generate();
+#endif
 }
 
 void TaskGenerator::callback(BlockedVectorHandle<vec4> &H) {
@@ -237,11 +232,7 @@ void sw(tasklib_t &tl_) {
   }
 #endif // USE_MPI
 
-//  fprintf(stderr, "# Start\n");
-
-  sgmpi::MPIHandle<Options> end_handle;
-
-  TaskGenerator task_gen(vars, g_dt, g_endtime, H, end_handle);
+  TaskGenerator task_gen(vars, g_dt, g_endtime, H);
 
 #ifdef USE_MPI
   tl->mpi_barrier();
@@ -249,12 +240,10 @@ void sw(tasklib_t &tl_) {
 
   Time::TimeUnit start = Time::getTime();
 
-  end_handle.schedule(ReadWriteAdd::write); // promise
-
   for (size_t i = 0; i < 5; ++i)
     task_gen.callback(H);
 
-  tl->wait(end_handle);
+  tl->barrier();
 
   Time::TimeUnit stop = Time::getTime();
 
@@ -268,7 +257,8 @@ void sw(tasklib_t &tl_) {
        << " chunk_size= " << vars.chunk_size
        << " num_chunks= " << vars.num_chunks
        << " cpus= " << num_cores 
-       << " time= " << (stop-start);
+       << " time= " << std::setfill('0') << std::setw(1) << (stop - start) / 1000000 << "." 
+       << std::setfill('0') << std::setw(6) << (stop - start) % ((stop - start) / 1000000);
 
     ss << verify(H);
 
@@ -289,7 +279,7 @@ void sw(tasklib_t &tl_) {
 
   {
     std::stringstream ss;
-    ss << "trace-" << rank << ".log";
+    ss << "trace-" << rank << ".trace";
     Log<Options>::dump(ss.str().c_str(), rank);
   }
 }

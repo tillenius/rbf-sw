@@ -62,9 +62,14 @@ thus runs slow, since the cores are oversubscribed.
 WORKFLOW
 ========
 
-  1) mt_preprocess(filename, fd)
-  2) mt_save(par)
-  3) ./run <INPUT_FILE_DIR> <CHUNK_SIZE> <TIME_STEP> <END_TIME>
+1) Generate data in MATLAB
+  1.1) mt_preprocess(filename, fd)
+  1.2) mt_save(par)
+
+2) Run simulation
+  ./run <INPUT_FILE_DIR> <CHUNK_SIZE> <TIME_STEP> <END_TIME>
+
+The parameters for the MATLAB commands are as follows:
 
   fd = stencil size
   par = parameters:
@@ -74,6 +79,15 @@ WORKFLOW
     par.ep = shape parameter (epsilon)
     par.order = order of hyperviscosity
     par.gamma_c = coefficient for hyperviscosity
+
+Example (generate data in MATLAB):
+
+  mt_preprocess('..\orgnodesets\icos655362.mat', 31)
+  par = struct('test', 'galew', 'n', 655362, 'fd', 31, 'ep', 40, 'order', 4, 'gamma_c', -0.1);
+  mt_save(par)
+
+Example (run):
+  ./run galew-655362-31-ep40-o4-gc-0.1 5120 5 500
 
 
 DETAILED WORKFLOW
