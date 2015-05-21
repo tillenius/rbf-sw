@@ -1,7 +1,3 @@
-TODO
-====
- - spuerglue-mpi: use all threads
-
 
 DIRECTORIES
 ===========
@@ -20,18 +16,22 @@ SETUP
 =====
 
 BASH COMMANDS
-  # checkout superglue
-  git clone git@github.com:tillenius/superglue.git
+  # checkout rbf-sw, superglue, and mpi-superglue (read-only)
+  git clone https://github.com/tillenius/rbf-sw.git
+  git clone https://github.com/tillenius/superglue.git
+  git clone https://github.com/tillenius/mpi-superglue.git
 
-  # checkout mpi-superglue
+  # or (with write-permission)
+  git clone git@github.com/tillenius/rbf-sw.git
+  git clone git@github.com:tillenius/superglue.git
   git clone git@github.com:tillenius/mpi-superglue.git
 
   # create links to superglue and mpi-superglue
-  ( cd rbf-sw/src ; ln -s ../superglue/include/ superglue )
-  ( cd rbf-sw/src ; ln -s ../mpi-superglue/include/ mpi_superglue )
+  ( cd rbf-sw ; ln -s ../superglue/include/ superglue )
+  ( cd rbf-sw ; ln -s ../mpi-superglue/include/ mpi-superglue )
 
   # make some directories
-  mkdir -p nodesets tree data resdata cartfd 
+  ( cd rbf-sw ; mkdir -p nodesets tree data resdata cartfd )
 
 
 QUICK GETTING STARTED
