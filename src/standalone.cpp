@@ -34,6 +34,7 @@ std::vector<uint32_t> prio_row;
 std::string g_mldatapath;
 uint32_t g_chunksize;
 double g_dt, g_endtime;
+double g_continuetime = -1.0;
 
 //=============================================================================
 // verify
@@ -116,14 +117,14 @@ struct TaskGenerator {
 
   TaskGenerator(variables &vars,
                 double dt_, double t_end_, BlockedVectorHandle<vec4> &H_)
-  : t(0.0), dt(dt_), t_end(t_end_), 
+  : t(g_continuetime != -1.0 ? g_continuetime : 0.0),
+    dt(dt_), t_end(t_end_),
 #ifdef RBFSW_DEBUG
-    next_save(save_interval), 
+    next_save(t+save_interval), 
     aborted(false),
 #endif
     rhs(vars), rk4(rhs), H(H_)
-  {
-  }
+  {}
 
   void callback(BlockedVectorHandle<vec4> &H);
 
@@ -207,7 +208,15 @@ void sw(tasklib_t &tl_) {
   vars.init(*tl, g_mldatapath.c_str(), num_cores, num_ranks, rank, g_chunksize);
 
   BlockedVectorHandle<vec4> H;
-  vars.load(*tl, (g_mldatapath + "/H").c_str(), H);
+  if (g_continuetime == -1.0)
+    vars.load(*tl, (g_mldatapath + "/H").c_str(), H);
+  else {
+    char fname[80];
+    sprintf(fname, "results-t%d.txt", (int) g_continuetime);
+    vars.load(*tl, fname, H);
+    if (rank == 0)
+      std::cout << "... continue from " << g_continuetime << std::endl;
+  }
 
   if (rank == 0) {
     std::cout
@@ -289,8 +298,8 @@ int main(int argc, char *argv[]) {
 
   assert(sizeof(uint32_t) == 4);
 
-  if (argc != 5) {
-    fprintf(stderr, "Usage: %s [mldatapath] [chunk_size] [time_step] [end_time]\n", argv[0]);
+  if (argc != 5 && argc != 6) {
+    fprintf(stderr, "Usage: %s <mldatapath> <chunk_size> <time_step> <end_time> [continue_from]\n", argv[0]);
     return 1;
   }
 
@@ -298,6 +307,8 @@ int main(int argc, char *argv[]) {
   g_chunksize = atoi(argv[2]);
   g_dt = atof(argv[3]);
   g_endtime = atof(argv[4]);
+  if (argc == 6)
+    g_continuetime = atof(argv[5]);
 
 #ifdef USE_MPI
   sgmpi::mpisuperglue<Options>(sw);
