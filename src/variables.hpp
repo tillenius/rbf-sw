@@ -67,6 +67,7 @@ private:
     double *src;
     VectorBlockHandle<vec4> * &dst;
     size_t rank;
+
     ConvQuadVecTask(size_t size_,
                     double *src_,
                     VectorBlockHandle<vec4> * &dst_,
@@ -80,14 +81,13 @@ private:
       dst->alloc(size, rank);
       memcpy(dst->get_data(), src, size*sizeof(vec4));
     }
-
-    std::string get_name() { return "ConvTriVecTask"; }
   };
 
   struct ConvAtmVecTask : public Task<Options> {
     size_t size;
     double *src;
     VectorBlock<atmdata> &dst;
+
     ConvAtmVecTask(size_t size_,
                    double *src_,
                    VectorBlock<atmdata> &dst_,
@@ -99,8 +99,6 @@ private:
       dst.alloc(size);
       memcpy(dst.value, src, size*sizeof(atmdata));
     }
-
-    std::string get_name() { return "ConvTriVecTask"; }
   };
 
   // ConvInfo: Data and some utility function shared between all S
@@ -125,6 +123,7 @@ private:
   struct BlockDTask : public Task<Options> {
     size_t brow, bcol, Didx;
     ConvInfo &info;
+
     BlockDTask(size_t brow_, size_t bcol_, size_t Didx_,
                ConvInfo &info_, 
                Handle<Options> &h)
@@ -181,8 +180,6 @@ private:
       memcpy(dst.value, &value[0], value.size() * sizeof(quad<double>));
       std::vector< quad<double> >().swap(value);
     }
-
-    std::string get_name() { return "ConvTask"; }
   };
 
   size_t get_num_chunks(size_t nd, size_t chunk_size) {
@@ -274,8 +271,9 @@ public:
     std::string mldatapath(mldatapath_);
 
     // load scalars from "params": nd, atm_gh0
-    FILE *f = fopen((mldatapath + "/params").c_str(), "rb");
-    if (f == NULL) { std::cerr<<"Error opening 'params' file " << std::endl; exit(1); }
+    std::string paramname(mldatapath + "/params");
+    FILE *f = fopen(paramname.c_str(), "rb");
+    if (f == NULL) { std::cerr<<"Error opening '"<<paramname<<"'" << std::endl; exit(1); }
     uint64_t ndtmp;
     assert(fread(&ndtmp, sizeof(uint64_t), 1, f) == 1);
     assert(fread(&gh0, sizeof(double), 1, f) == 1);

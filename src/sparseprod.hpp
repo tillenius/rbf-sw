@@ -12,28 +12,25 @@ public:
   VectorBlockHandle< quad<vec4> > &T;
   const MatrixBlock< quad<double> > &DP;
   const VectorBlockHandle<vec4> &H;
-  std::string task_name;
   bool overwrite;
 
-  SparseProdTask(const char *name,
-                 uint32_t r, uint32_t c,
+  SparseProdTask(const double time_,
+                 const uint32_t r, const uint32_t c,
                  VectorBlockHandle< quad<vec4> > &T_,
                  const MatrixBlock< quad<double> > &DP_,
                  const VectorBlockHandle<vec4> &H_,
-                 bool overwrite_)
+                 const bool overwrite_)
   : T(T_), DP(DP_), H(H_), overwrite(overwrite_)
   {
+    this->time = time_;
     if (overwrite)
       register_access(ReadWriteAdd::write, T.handle);
     else
       register_access(ReadWriteAdd::add, T.handle);
     register_access(ReadWriteAdd::read, H.handle);
-    task_name = name;
+
 #ifdef USE_MPI
-    is_prioritized = prio_row[r];
-    task_name += (is_prioritized ? "P sparseprod" : "sparseprod");
-#else
-    task_name += "sparseprod";
+    is_prioritized = prio_row[r] == 1;
 #endif
   }
 
@@ -85,8 +82,6 @@ public:
     else
       run_internal<false>();
   }
-
-  std::string get_name() { return task_name; }
 };
 
 #endif // SPARSEPROD_HPP_INCLUDED

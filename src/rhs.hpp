@@ -15,27 +15,23 @@ public:
   const VectorBlockHandle< quad<vec4> > &T;
   VectorBlockHandle<vec4> &F;
   const double gh0;
-  std::string task_name;
 
-  CalcRHSTask(const char *name,
+  CalcRHSTask(const double time_,
               const VectorBlock<atmdata> &atm_,
               const VectorBlockHandle<vec4> &H_,
               const VectorBlockHandle< quad<vec4> > &T_,
               const double gh0_,
               VectorBlockHandle<vec4> &F_,
-              bool prio)
+              const int r)
   : atm(atm_), H(H_), T(T_), F(F_), gh0(gh0_)
   {
+    this->time = time_;
     register_access(ReadWriteAdd::write, F.handle);
     register_access(ReadWriteAdd::read, H.handle);
     register_access(ReadWriteAdd::read, T.handle);
 
-    task_name = name;
 #ifdef USE_MPI
-    is_prioritized = prio;
-    task_name += (is_prioritized ? "P rhs" : "rhs" );
-#else
-    task_name += "rhs";
+    is_prioritized = prio_row[r] == 1;
 #endif
   }
 
@@ -68,7 +64,6 @@ public:
                + T.l(i,3);
     }
   }
-  std::string get_name() { return task_name; }
 };
 
 //=============================================================================
@@ -82,8 +77,7 @@ struct RHS {
     T.init(*tl, vars, "T");
   }
 
-  void calc_rhs(const char *name,
-                double t,
+  void calc_rhs(double time, double t,
                 BlockedVectorHandle<vec4> &H,
                 BlockedVectorHandle<vec4> &F) {
 
@@ -92,13 +86,13 @@ struct RHS {
     for (size_t i = 0; i < vars.D.size(); ++i) {
       const uint32_t r = vars.D[i].r;
       const uint32_t c = vars.D[i].c;
-      tl->submit(new SparseProdTask(name, r, c, T(r), vars.D[i], H(c), r != oldr));
+      tl->submit(new SparseProdTask(time, r, c, T(r), vars.D[i], H(c), r != oldr));
       oldr = r;
     }
 
     // F(r) = rhs(H(r), T(r))
     for (uint32_t r = 0; r < vars.num_chunks; ++r)
-      tl->submit(new CalcRHSTask(name, vars.atm[r], H(r), T(r), vars.gh0, F(r), prio_row[r]));
+      tl->submit(new CalcRHSTask(time, vars.atm[r], H(r), T(r), vars.gh0, F(r), r));
   }
 };
 

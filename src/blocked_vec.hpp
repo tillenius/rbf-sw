@@ -133,7 +133,6 @@ struct BlockedVectorHandle {
           chunk = new VectorBlockHandle<value_t>();
           chunk->alloc(size, rank);
         }
-        std::string get_name() { return "InitBlockTask"; }
       };
 
       Task<Options> *task = new InitBlockTask(size, chunks[i], h, vars.rowrank[i]);

@@ -83,7 +83,6 @@ struct SaveTask : public sgmpi::MPITask<Options> {
     fwrite(H.get_data(), H.size(), sizeof(vec4), fout);
     fclose(fout);
   }
-  std::string get_name() { return "Save"; }
 };
 
 struct GenTaskCallback : public Task<Options> {
@@ -91,7 +90,6 @@ struct GenTaskCallback : public Task<Options> {
   const VectorBlockHandle<vec4> *block;
   GenTaskCallback(TaskGenerator &tg_, BlockedVectorHandle<vec4> &H);
   void run(TaskExecutor<Options> &);
-  std::string get_name() { return "GenTask"; }
 };
 
 #ifdef RBFSW_DEBUG
@@ -280,7 +278,7 @@ void sw(tasklib_t &tl_) {
   {
     std::stringstream ss;
     ss << "trace-" << rank << ".trace";
-    Log<Options>::dump(ss.str().c_str(), rank);
+    Log2<Options, double>::dump(ss.str().c_str(), rank);
   }
 }
 

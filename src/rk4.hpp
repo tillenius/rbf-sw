@@ -28,36 +28,33 @@ struct RK4 {
       d[i].init(*tl, rhs.vars, "d");
   }
 
-  void add(const char *name,
+  void add(double time,
            BlockedVectorHandle<vec4> &dst,
            BlockedVectorHandle<vec4> &A, const double s,
            BlockedVectorHandle<vec4> &B) {
     for (uint32_t r = 0; r < num_chunks; ++r)
-      tl->submit(new AdditionTask(name, dst(r), A(r), s, B(r), prio_row[r]));
+      tl->submit(new AdditionTask(time, dst(r), A(r), s, B(r), r));
   }
 
-  void step(const char *name, BlockedVectorHandle<vec4> &Hdst, BlockedVectorHandle<vec4> &Hsrc, const double s) {
+  void step(double time, BlockedVectorHandle<vec4> &Hdst, BlockedVectorHandle<vec4> &Hsrc, const double s) {
     for (uint32_t r = 0; r < num_chunks; ++r)
-      tl->submit(new StepTask(name, Hdst(r), Hsrc(r), s, d[0](r), d[1](r), d[2](r), d[3](r), prio_row[r]));
+      tl->submit(new StepTask(time, Hdst(r), Hsrc(r), s, d[0](r), d[1](r), d[2](r), d[3](r), r));
   }
 
   template<typename TaskGenerator>
-  void operator()(double t, double dt, BlockedVectorHandle<vec4> &H,
+  void operator()(double time, double dt, BlockedVectorHandle<vec4> &H,
                   TaskGenerator &task_gen) {
 
-    char time[16];
-    sprintf(time, "%d ", (int) t);
+    rhs.calc_rhs(time, time, H, d[0]);           // d1 = dt*rhs(t, H);
 
-    rhs.calc_rhs(time, t, H, d[0]);           // d1 = dt*rhs(t, H);
+    add(time, K[0], H, 0.5*dt, d[0]);            // K0 = H + 0.5*d1;
+    rhs.calc_rhs(time, time+0.5*dt, K[0], d[1]); // d2 = dt*rhs(t+0.5*dt, K0);
 
-    add(time, K[0], H, 0.5*dt, d[0]);         // K0 = H + 0.5*d1;
-    rhs.calc_rhs(time, t+0.5*dt, K[0], d[1]); // d2 = dt*rhs(t+0.5*dt, K0);
+    add(time, K[1], H, 0.5*dt, d[1]);            // K1 = H + 0.5*d2;
+    rhs.calc_rhs(time, time+0.5*dt, K[1], d[2]); // d3 = dt*rhs(t+0.5*dt, K1);
 
-    add(time, K[1], H, 0.5*dt, d[1]);         // K1 = H + 0.5*d2;
-    rhs.calc_rhs(time, t+0.5*dt, K[1], d[2]); // d3 = dt*rhs(t+0.5*dt, K1);
-
-    add(time, K[2], H, dt, d[2]);             // K2 = H + d3;
-    rhs.calc_rhs(time, t+dt, K[2], d[3]);     // d4 = dt*rhs(t+dt, K2);
+    add(time, K[2], H, dt, d[2]);                // K2 = H + d3;
+    rhs.calc_rhs(time, time+dt, K[2], d[3]);     // d4 = dt*rhs(t+dt, K2);
 
     // H = H + 1.0/6.0*(d1 + 2.0*d2 + 2.0*d3 + d4);
     step(time, H, H, dt/6.0);
