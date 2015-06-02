@@ -62,23 +62,27 @@ switch par.test
     atm.hm0 = 2000;
 
     theta=0:0.01:2*pi;
-    plotsph(cos(theta)*atm.mR + atm.lam_c, sin(theta)*atm.mR + atm.thm_c, 'w:')
+    plotsph(cos(theta)*atm.mR + atm.lam_c, sin(theta)*atm.mR + atm.thm_c, 'w:', 2)
 end
 
 
 %%% draw some longitudes
 theta=0:0.01:2*pi;
 
-plotsph( theta,  0/90*pi/2*ones(size(theta)), 'k-')
-for lat=[-67.5 -45 -22.5 22.5 45 67.5 90]
-  plotsph( theta,  lat/90*pi/2*ones(size(theta)), 'k--')
+lats=[-67.5 -45 -22.5 22.5 45 67.5 90];
+%lats=[-60 -30 30 60 90];
+plotsph( theta,  0/90*pi/2*ones(size(theta)), 'k-', 1)
+for lat=lats
+  plotsph( theta,  lat/90*pi/2*ones(size(theta)), 'k--', 1)
 end
 
-plotsph( 0/90*pi/2*ones(size(theta)), theta, 'k-')
-for long=[-67.5 -45 -22.5 22.5 45 67.5 90]
-  plotsph( long/90*pi/2*ones(size(theta)), theta, 'k--')
+plotsph( 0/90*pi/2*ones(size(theta)), theta, 'k-', 1)
+for long=lats
+  plotsph( long/90*pi/2*ones(size(theta)), theta, 'k--', 1)
 end
 
+%print('-dpdf','-r300', '-painters', [filename '.pdf']);
+%print('-dpng','-r300', '-painters', [filename '.png']);
 
 %%%%%%%%%%%%%%%
 
@@ -95,12 +99,10 @@ function circ3d(n)
   theta=0:0.01:2*pi;
   v=null(n');
   points=repmat([0 0 0]',1,size(theta,2))+1*(v(:,1)*cos(theta)+v(:,2)*sin(theta));
-  plot3(points(1,:),points(2,:),points(3,:),'k-','linewidth',4);
+  plot3(points(1,:),points(2,:),points(3,:),'k-','LineWidth', 3);
 
-function plotsph(lam, thm, sty)
-global az el
-%    pts = [cos(theta)*atm.mR + atm.lam_c ; sin(theta)*atm.mR + atm.thm_c];
-%    [x,y,z] = sph2cart(pts(1,:), pts(2,:), 1);
-    [x,y,z] = sph2cart(lam, thm, 1);
-    A=[x',y',z']*rotz(az)*rotx(-el);
-    plot3(A(:,1),A(:,2),A(:,3),sty,'linewidth',2);
+function plotsph(lam, thm, sty, lsize)
+  global az el
+  [x,y,z] = sph2cart(lam, thm, 1);
+  A=[x',y',z']*rotz(az)*rotx(-el);
+  plot3(A(:,1),A(:,2),A(:,3), sty, 'LineWidth', lsize);
