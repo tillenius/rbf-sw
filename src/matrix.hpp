@@ -27,7 +27,8 @@ struct MatrixBlock {
   }
 
   ~MatrixBlock() {
-    delete [] value;
+    AlignmentAllocator<char, 32> alloc; 
+    alloc.deallocate((char *) value, 0);
   }
 };
 

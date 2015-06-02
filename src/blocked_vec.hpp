@@ -22,7 +22,8 @@ struct VectorBlock {
   }
 
   ~VectorBlock() {
-    delete [] value;
+    AlignmentAllocator<value_t, 32> alloc;
+    alloc.deallocate(value, 0);
   }
   value_t &operator[](size_t i) { return value[i]; }
   const value_t &operator[](size_t i) const { return value[i]; }
@@ -63,6 +64,15 @@ struct VectorBlockHandle {
 #else
   VectorBlockHandle() : data(0) {}
 #endif
+
+  ~VectorBlockHandle() {
+    AlignmentAllocator<value_t, 32> alloc;
+#ifdef USE_MPI
+    alloc.deallocate(handle.data, handle.size);
+#else
+    alloc.deallocate(data, data_size);
+#endif
+  }
 
   void alloc(uint32_t size_, int rowrank) {
     AlignmentAllocator<value_t, 32> alloc;
