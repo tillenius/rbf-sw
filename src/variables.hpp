@@ -74,6 +74,7 @@ private:
                     Handle<Options> &h,
                     size_t rank_)
       : size(size_), src(src_), dst(dst_), rank(rank_) {
+      this->time = -6.0;
       register_access(ReadWriteAdd::add, h);
     }
     void run(TaskExecutor<Options> &) {
@@ -93,6 +94,7 @@ private:
                    VectorBlock<atmdata> &dst_,
                    Handle<Options> &h)
     : size(size_), src(src_), dst(dst_) {
+      this->time = -7.0;
       register_access(ReadWriteAdd::add, h);
     }
     void run(TaskExecutor<Options> &) {
@@ -129,6 +131,7 @@ private:
                Handle<Options> &h)
     : brow(brow_), bcol(bcol_), Didx(Didx_), info(info_)
     {
+      this->time = -8.0;
       register_access(ReadWriteAdd::add, h);
       // Note: D[Didx] does not exist at construction time, but only at execution time.
     }

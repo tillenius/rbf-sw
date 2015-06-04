@@ -46,7 +46,7 @@ public:
   }
   template<typename Req>
   static void send(Req &req, Time::TimeUnit stop) {
-    Log2<Options, double>::log(-1.0, req.mpiinstr_start, stop);
+    Log2<Options, double>::log(-3.0, req.mpiinstr_start, stop);
   }
 };
 

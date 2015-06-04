@@ -69,6 +69,7 @@ struct SaveTask : public sgmpi::MPITask<Options> {
   bool overwrite;
   SaveTask(const char *filename_, VectorBlockHandle<vec4> &H_, sgmpi::MPIHandle<Options> &filehandle, bool o_)
   : filename(filename_), H(H_), overwrite(o_) {
+    this->time = -4.0;
     register_access(ReadWriteAdd::read, H.handle);
     register_access(ReadWriteAdd::write, filehandle);
   }
@@ -167,6 +168,7 @@ struct TaskGenerator {
 
 GenTaskCallback::GenTaskCallback(TaskGenerator &tg_, BlockedVectorHandle<vec4> &H)
 : tg(tg_) {
+  this->time = -5.0;
   register_access(ReadWriteAdd::write, tg_.handle);
 #ifdef USE_MPI
   block = &H.register_access_any(tl->get_rank(), *this, ReadWriteAdd::read, 0); // TODO: don't require all tasks to finish!
