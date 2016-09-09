@@ -33,7 +33,7 @@ fi
 ### 0: COMPILE
 
 if [[ ${TESTS} == *0* ]]; then
-  make bin/sw
+  make bin/sw2.prod
 fi
 
 
