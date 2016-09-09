@@ -37,7 +37,7 @@ fi
 ### 0: COMPILE
 
 if [[ ${TESTS} == *0* ]]; then
-  make bin/swmpi
+  make bin/swmpi2.prod
 fi
 
 
